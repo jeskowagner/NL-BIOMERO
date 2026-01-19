@@ -3,9 +3,11 @@
 This document outlines several deployment scenarios for the NL-BIOMERO platform.
 Containers are available prebuilt and deployment is possible on Linux, Windows (via Docker Desktop), or Podman (e.g. RHEL/SELinux). Kubernetes setups should also be possible with shares between services.
 
-> Note: The scenarios in this document are examples for inspiration, not official recommendations or complete solutions. You should adapt them to your infrastructure, security posture, and operational requirements.
+```{note}
+The scenarios in this document are examples for inspiration, not official recommendations or complete solutions. You should adapt them to your infrastructure, security posture, and operational requirements.
+```
 
-For detailed docker-compose configurations for each scenario, see [Docker Compose Scenarios](docker-compose-scenarios.md).
+For detailed docker-compose configurations for each scenario, see {doc}`docker-compose-scenarios`.
 
 ---
 
@@ -16,7 +18,7 @@ For detailed docker-compose configurations for each scenario, see [Docker Compos
 - Builds containers from local source code
 - Can include special configurations for easier development workflow
 
-→ See [Docker Compose Scenarios](docker-compose-scenarios.md) for specific configurations and usage details.
+→ See {doc}`docker-compose-scenarios` for specific configurations and usage details.
 
 ---
 
@@ -29,7 +31,7 @@ For detailed docker-compose configurations for each scenario, see [Docker Compos
 - Works on Windows (Docker Desktop), Linux (Docker or Podman).
 - For Kubernetes, adjust disk mounts and configs accordingly; some data needs to be shared between services.
 
-→ See [Docker Compose Scenarios](docker-compose-scenarios.md) for specific deployment configurations.
+→ See {doc}`docker-compose-scenarios` for specific deployment configurations.
 
 ---
 

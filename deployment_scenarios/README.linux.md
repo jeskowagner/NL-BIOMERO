@@ -2,6 +2,10 @@
 
 This guide covers deploying NL‑BIOMERO on **Ubuntu/Linux**, as always tuned for FAIR imaging with BIOMERO, OMERO.forms, and other plugins.
 
+```{warning}
+This deployment guide is based on a snapshot in time development version of NL-BIOMERO. User interfaces, features, and configurations shown may have been updated and changed since this documentation was created. This content does not necessarily represent the final product and should be used as a general reference for development and demonstration purposes.
+```
+
 ---
 
 ## 🧰 Prerequisites

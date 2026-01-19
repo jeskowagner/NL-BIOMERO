@@ -2,7 +2,9 @@
 
 This document outlines the different deployment scenarios for NL-BIOMERO and maps them to corresponding docker-compose configurations.
 
-> Note: The docker-compose files and flows described here are examples for inspiration. They are not official recommendations or complete fixes; review and adapt them for your environment before production use.
+```{warning}
+The docker-compose files and flows described here are examples for inspiration. They are not official recommendations or complete fixes; review and adapt them for your environment before production use.
+```
 
 ## Overview
 
@@ -233,22 +235,3 @@ services:
 
 For more detailed information about each scenario, see the deployment scenarios in `deployment.md`.
 
-## Detailed Deployment Guides
-
-For specific, in-depth deployment instructions, see these platform-specific guides:
-
-### Production Deployments
-- **[Linux/Ubuntu with SSL](README.linux.md)** - Complete guide for production Ubuntu deployment with SSL certificates, nginx reverse proxy, and security configurations
-  - Covers `docker-compose-for-ubuntu-with-SSL.yml`
-  - SSL certificate setup with Let's Encrypt
-  - Nginx reverse proxy configuration
-  - Volume permissions and security considerations
-
-### Development & Demo Deployments  
-- **[BIOMERO 101 Installation Guide](BIOMERO%20101%20-%20installation%20guide.pdf)** - Step-by-step beginner's guide for development setup
-  - Perfect for first-time users and demonstrations
-  - Covers Docker Desktop installation on Windows
-  - WSL2 setup and configuration
-  - Basic development workflow
-
-These guides provide platform-specific details, troubleshooting tips, and best practices for their respective deployment scenarios.
