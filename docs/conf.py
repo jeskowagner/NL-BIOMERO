@@ -60,6 +60,15 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+# Search configuration - ensure search index is built
+html_search_language = 'en'
+
+# Fix jQuery not being included - needed for search functionality
+html_js_files = [
+    'https://code.jquery.com/jquery-3.6.0.min.js',
+]
+
 html_theme_options = {
     'navigation_depth': 4,
     'collapse_navigation': False,
