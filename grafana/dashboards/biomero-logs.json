@@ -125,7 +125,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "{job=\"biomero\"}",
+          "expr": "{job=\"biomero\", service=~\"${service_filter}\"}",
           "queryType": "range",
           "refId": "A"
         }
@@ -139,6 +139,59 @@
   "tags": ["biomero", "logs", "main"],
   "templating": {
     "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "service_filter",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "biomeroworker",
+            "value": "biomeroworker"
+          },
+          {
+            "selected": false,
+            "text": "importer",
+            "value": "importer"
+          },
+          {
+            "selected": false,
+            "text": "omeroserver",
+            "value": "omeroserver"
+          },
+          {
+            "selected": false,
+            "text": "omeroworker-1",
+            "value": "omeroworker-1"
+          },
+          {
+            "selected": false,
+            "text": "omeroweb",
+            "value": "omeroweb"
+          },
+          {
+            "selected": false,
+            "text": "nginx",
+            "value": "nginx"
+          }
+        ],
+        "query": "biomeroworker,importer,omeroserver,omeroworker-1,omeroweb,nginx",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
       {
         "current": {
           "selected": false,

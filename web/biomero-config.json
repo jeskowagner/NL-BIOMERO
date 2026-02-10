@@ -20,7 +20,7 @@
       }
     },
     "dataset_leica_uuid": {
-      "container": "cellularimagingcf/convertleica-docker:v1.4.1",
+      "container": "cellularimagingcf/convertleica-docker:v1.5.0",
       "extra_params": {
         "image_uuid": "{UUID}"
       }
