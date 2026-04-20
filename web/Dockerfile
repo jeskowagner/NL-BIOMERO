@@ -40,7 +40,7 @@ ENV PATH="/usr/pgsql-12/bin:/usr/pgsql-14/bin:${PATH}"
 COPY biomeroworker/slurm-config.ini /etc/slurm-config.ini
 
 ### Install OMERO.biomero first ###
-### BIOMERO.importer will be installed as a dependency of OMERO.biomero ###
+### BIOMERO.importer and BIOMERO.analyzer will be installed as a dependency of OMERO.biomero ###
 
 # Install released OMERO.biomero from PyPI and run setup
 RUN /opt/omero/web/venv3/bin/pip install omero-biomero==${OMERO_BIOMERO_VERSION} \
