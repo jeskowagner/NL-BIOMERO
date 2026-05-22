@@ -1,6 +1,14 @@
+# Optional: host-side SSH alias for manual testing of the local Slurm
+# cluster. After deploying NL-BIOMERO and the slurm stack, append this
+# block to your ~/.ssh/config (Linux/macOS) or
+# %USERPROFILE%\.ssh\config (Windows). Replace the IdentityFile path
+# with the absolute path to your checkout's biomeroworker-ssh/id_rsa.
+#
+# Not required for BIOMERO itself — the biomeroworker container reads
+# its own config from ./biomeroworker-ssh/config.
 Host localslurm
-        HostName host.docker.internal
-        User slurm
-        Port 2222
-        IdentityFile ~/.ssh/id_rsa
-        StrictHostKeyChecking no
+    HostName localhost
+    User slurm
+    Port 2222
+    IdentityFile /path/to/NL-BIOMERO/biomeroworker-ssh/id_rsa
+    StrictHostKeyChecking no

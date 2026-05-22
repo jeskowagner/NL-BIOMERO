@@ -76,41 +76,138 @@ First, customize your environment file `.env`:
 ```
 
 ### 3. Setup Slurm Connection (Optional)
-For local testing with a containerized Slurm cluster:
+
+For local testing, deploy a containerized Slurm cluster alongside NL-BIOMERO
+using [jeskowagner/slurm-docker-cluster](https://github.com/jeskowagner/slurm-docker-cluster)
+(Slurm 25.x, BIOMERO-compatible).
+
+#### 3a. Generate the biomeroworker keypair
+
+The biomeroworker container reaches slurmctld with its own keypair under
+`./biomeroworker-ssh/` (gitignored — each deployment generates its own):
 
 ```bash
-# Setup local Slurm cluster
+mkdir -p biomeroworker-ssh
+ssh-keygen -t rsa -b 4096 -f biomeroworker-ssh/id_rsa -N "" -C biomeroworker
+touch biomeroworker-ssh/known_hosts
+# uid 1000 = omero-server inside the biomeroworker container
+sudo chown -R 1000:1000 biomeroworker-ssh/
+```
+
+Then create `biomeroworker-ssh/config` with:
+
+```
+Host localslurm
+    HostName slurmctld
+    User slurm
+    Port 22
+    IdentityFile ~/.ssh/id_rsa
+    StrictHostKeyChecking no
+```
+
+#### 3b. Bring up the Slurm cluster
+
+The slurm stack attaches to NL-BIOMERO's `nl-biomero_omero` Docker network.
+If you haven't deployed NL-BIOMERO yet (step 5 below), create the network
+first so the slurm stack has somewhere to attach:
+
+```bash
+docker network create nl-biomero_omero
+```
+
+Clone the fork:
+
+```bash
 cd ..
-git clone https://github.com/NL-BioImaging/NL-BIOMERO-Local-Slurm
-cd NL-BIOMERO-Local-Slurm
-cp ~/.ssh/id_rsa.pub .
-docker compose -f .\docker-compose-from-dockerhub.yml up -d --build  
+git clone -b nl-biomero https://github.com/jeskowagner/slurm-docker-cluster
+cd slurm-docker-cluster
+```
+
+**CPU-only:** create `.env` with
+
+```ini
+COMPOSE_PROJECT_NAME=slurm-docker-cluster
+SLURM_VERSION=25.11.4
+SSH_ENABLE=true
+SSH_AUTHORIZED_KEYS=../NL-BIOMERO/biomeroworker-ssh/id_rsa.pub
+SSH_PORT=2222
+CPU_WORKER_COUNT=2
+```
+
+then build the biomero compatibility layer and bring up the stack:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.biomero.yml build slurmdbd
+docker compose -f docker-compose.yml -f docker-compose.biomero.yml up -d
 cd ../NL-BIOMERO
 ```
 
-### 4. Configure SSH Access
-Test Slurm connectivity:
+**With NVIDIA GPU:** requires
+[nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+on the host. Add three more lines to `.env`:
+
+```ini
+COMPOSE_PROJECT_NAME=slurm-docker-cluster
+SLURM_VERSION=25.11.4
+SSH_ENABLE=true
+SSH_AUTHORIZED_KEYS=../NL-BIOMERO/biomeroworker-ssh/id_rsa.pub
+SSH_PORT=2222
+CPU_WORKER_COUNT=2
+GPU_ENABLE=true
+GPU_WORKER_COUNT=1
+UPSTREAM_TAG=25.11.4-gpu-2.3.1
+```
+
+build and bring up with the `gpu` profile (the build step pulls the GPU base
+image automatically via `UPSTREAM_TAG`):
 
 ```bash
-# from your host machine:
-ssh -i ~/.ssh/id_rsa -p 2222 -o StrictHostKeyChecking=no slurm@localhost
-# or from inside your biomeroworker container:
-ssh -i ~/.ssh/id_rsa -p 2222 -o StrictHostKeyChecking=no slurm@host.docker.internal
+docker compose -f docker-compose.yml -f docker-compose.biomero.yml build slurmdbd
+docker compose -f docker-compose.yml -f docker-compose.biomero.yml --profile gpu up -d
+cd ../NL-BIOMERO
+```
+
+Workers register dynamically: `c1`, `c2`, ... on the `cpu` partition (default),
+`g1`, `g2`, ... on the `gpu` partition.
+
+> [!NOTE]
+> The previous documented option,
+> [NL-BIOMERO-Local-Slurm](https://github.com/NL-BioImaging/NL-BIOMERO-Local-Slurm)
+> (Slurm 21.08), still runs but is no longer the recommended path for new
+> deployments.
+
+### 4. Configure SSH Access
+
+Verify the slurm cluster accepts the biomeroworker pubkey from the host
+(via slurmctld's published SSH port 2222):
+
+```bash
+ssh -i biomeroworker-ssh/id_rsa -p 2222 -o StrictHostKeyChecking=no slurm@localhost
 exit
 ```
 
-If successful, create an SSH alias:
+Inside the biomeroworker container, biomero reaches slurmctld with the
+alias `localslurm` (already configured in `biomeroworker-ssh/config` from
+step 3a). It resolves to `slurmctld:22` over Docker's `nl-biomero_omero`
+network — no host-side `~/.ssh/config` edit needed. You can confirm
+after step 5 with:
 
 ```bash
-cp ssh.config.example ~/.ssh/config
+docker compose exec biomeroworker ssh localslurm hostname
+# expect: slurmctld
 ```
 
-If not successful, try forcing ownership and permissions (and then try ssh again):
+If the host-side test fails, double-check that
+`slurm-docker-cluster/.env`'s `SSH_AUTHORIZED_KEYS` points at the same
+pubkey you generated in step 3a, and that the slurm stack came up
+cleanly:
 
 ```bash
-# from your host machine:
-docker exec -it slurmctld bash -c "chown -R slurm:slurm /home/slurm/.ssh && chmod 700 /home/slurm/.ssh && chmod 600 /home/slurm/.ssh/authorized_keys" 
+docker exec slurmctld sinfo
 ```
+
+Optional: if you want a host-side `ssh localslurm` alias for manual
+testing, see `ssh.config.example` and append it to your `~/.ssh/config`.
 
 ### 5. Deploy NL-BIOMERO
 Launch the full stack:

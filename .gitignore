@@ -20,3 +20,6 @@ docs/_build_local/
 docs/venv/
 
 .analyzed
+
+# Per-deployment SSH keypair for biomeroworker -> slurmctld
+biomeroworker-ssh/

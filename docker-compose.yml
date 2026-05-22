@@ -133,14 +133,16 @@ services:
       SQLALCHEMY_URL: postgresql+psycopg2://${BIOMERO_POSTGRES_USER}:${BIOMERO_POSTGRES_PASSWORD}@database-biomero:5432/${BIOMERO_POSTGRES_DB}
       INGEST_TRACKING_DB_URL: postgresql+psycopg2://${BIOMERO_POSTGRES_USER}:${BIOMERO_POSTGRES_PASSWORD}@database-biomero:5432/${BIOMERO_POSTGRES_DB}
       IMPORTER_ENABLED: ${IMPORTER_ENABLED}
-    # Named network to communicate with other containers
+    # Named network to communicate with other containers.
+    # SSH to slurmctld works via the omero network because slurmctld is
+    # attached to it as an external network from the slurm stack side.
     networks:
       - omero
     # Named volume to share data access and persist data
     # Forward host SSH setup to container
     volumes:
       - "omero:/OMERO"
-      - "~/.ssh:/tmp/.ssh:ro"
+      - "./biomeroworker-ssh:/tmp/.ssh:ro"
       - "./web/slurm-config.ini:/opt/omero/server/slurm-config.ini:rw"
       - "./web/L-Drive:/data"
       - "./config/biomero-importer:/opt/omero/server/config-importer:ro"
@@ -252,11 +254,14 @@ networks:
 # Mount restored data to the named volumes with external: true and name: <volume_name>
 volumes:
   database:
+    name: nl-biomero_database_pg16
     # external: true
     # name: nl-biomero_database16 # If you upgraded from 11 to 16, use the restored db name here
   database-biomero:
+    name: nl-biomero_database-biomero_pg16
     # external: true
     # name: biomero-2025-07-24-14-06-06-pg16 # Restored data
   omero:
+    name: nl-biomero_omero_v2  # isolate from /opt/omero install; stale /OMERO/Files/<id> in shared volume collided with fresh OriginalFile IDs and broke in-place attachments
     # external: true
     # name: omero-server-2025-07-29_12-09-40-UTC #  Restored data
