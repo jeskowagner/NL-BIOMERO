@@ -106,7 +106,7 @@ services:
     # Forward host SSH setup to container
     volumes:
       - "omero:/OMERO"
-      - "~/.ssh:/tmp/.ssh:ro"
+      - "../biomeroworker-ssh:/tmp/.ssh:ro"
       - "../web/slurm-config.ini:/opt/omero/server/slurm-config.ini:rw"
       - "../web/L-Drive:/data"
       - "../config/biomero-importer:/opt/omero/server/config-importer:ro"
@@ -145,7 +145,7 @@ services:
     volumes:
       - "../web/slurm-config.ini:/opt/omero/web/OMERO.web/var/slurm-config.ini:rw"
       - "../web/biomero-config.json:/opt/omero/web/OMERO.web/var/biomero-config.json:rw"
-      - "../web/local_omeroweb_edits/pretty_login/login_page_images/bioimaging.png:/opt/omero/web/venv3/lib/python3.9/site-packages/omeroweb/webclient/static/webclient/image/login_page_images/AmsterdamUMC-logo.png:ro"
+      - "../web/local_omeroweb_edits/pretty_login/login_page_images/AmsterdamUMC-logo.png:/opt/omero/web/venv3/lib/python3.9/site-packages/omeroweb/webclient/static/webclient/image/login_page_images/AmsterdamUMC-logo.png:ro"
       - "../web/L-Drive:/data:rw"
 
   metabase:
@@ -196,6 +196,8 @@ services:
 # Define the network(s) to communicate between containers
 networks:
   omero:
+    name: nl-biomero_omero
+    external: true
 
 # Define the named volume(s) to persist data to the host computer
 volumes:
